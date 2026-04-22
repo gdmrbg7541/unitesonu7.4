@@ -102,7 +102,7 @@
             grid-area: instruction;
             text-align: right; 
             font-size: 2.2rem; 
-            font-weight: 700;
+            font-weight: 400;
             color: #555;
         }
         
@@ -155,16 +155,17 @@
             transition: border-color 0.3s; /* Dragover için ekledik */
         }
 
-        .category-drop-zone h3 {
-            grid-column: 1 / -1; 
-            margin: 0 0 10px 0;
-            font-size: 2.1rem; 
-            color: var(--accent-color);
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 5px;
-            width: 100%;
-            text-align: center;
-        }
+       .category-drop-zone h3 {
+    grid-column: 1 / -1; 
+    margin: 0 0 10px 0;
+    font-size: 2.1rem; 
+    color: var(--accent-color);
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+    width: 100%;
+    text-align: center;
+    font-weight: 400 !important; /* Bu satırı ekleyin */
+}
         /* --- Tek kalan son kutuyu ortalama kodu --- */
         .drop-zones-container .category-drop-zone:last-child:nth-child(odd) {
             grid-column: span 2;      
@@ -195,7 +196,7 @@
             padding: 5px 2px;
             color: white;
             font-size: 1.8rem; 
-            font-weight: 700;
+            font-weight: 400;
             border-radius: 8px; 
             cursor: grab;
             user-select: none;
@@ -358,9 +359,11 @@
                 max-width: calc(99vh * 9 / 16); 
             }
             #start-screen h1 {
-                font-size: 3rem; 
-                margin-bottom: 5px;
-            }
+    font-size: 5rem;
+    margin-bottom: 10px;
+    text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    font-weight: 400 !important; /* Bold (700) yerine 400 yapıldı */
+}
 
             #start-screen p {
                 font-size: 1.5rem !important; 
@@ -524,6 +527,7 @@
             font-size: 5rem;
             margin-bottom: 10px;
             text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            font-weight: 400 !important; /* Başlığı inceltir */
         }
 
         #start-button-main {
@@ -531,7 +535,7 @@
             color: #333;
             font-family: var(--font-arabic);
             font-size: 3rem;
-            font-weight: bold;
+            font-weight: normal;
             padding: 10px 60px;
             border: none;
             border-radius: 50px;
@@ -604,6 +608,13 @@
 }
 /* İçeriğin tam ekranda dikey olarak yayılmasını sağlar */
         body.fullscreen .activity-area {
+            height: calc(100vh - 60px); /* Header yüksekliğini düşerek tam ekran yapar */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
 </head>

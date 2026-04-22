@@ -787,6 +787,7 @@
             ["ط","ك","م","ن","ت","ا","ل","ب","ي","س","ش","ذ"],
             ["Backspace", "ظ","ز","و","ة","ى","ر","ؤ","ء","ئ"] 
         ];
+
 const activitiesData = [
     // 1. Ankara - Başkent [cite: 2, 21]
     { 
@@ -1327,20 +1328,7 @@ const activitiesData = [
                 // 🔥 YAMA BAŞLANGICI: Geri bildirimde gizlenecek basitleştirilmiş kelimeler
                 // Bu kelimeler, asıl hemzeli/elifli formları kabul etmek için eklenmiş
                 // klavye dostu, basitleştirilmiş versiyonlardır ve geri bildirimde gösterilmeyecektir.
-                const variantsToExclude = 
-["اسطنبول",
-"أَصْغَر",
-"الى",
-"اسافر",
-"اذهب",
-"اين",
-"اسْوارها التاريخية",
-"جامع اولو",
-"كباب اسْكندر",
- "احدث","احمر",
-"اخضر",
-"اسرع",
-"ابطا"];
+                const variantsToExclude = ["اعيش","اسكن","الى","اسافر", "اذهب", "اين", "اقدم", "احدث","احمر","اخضر",,"اسرع","ابطا"];
                 
                 // Cevap listesini filtrele: Sadece ana (canonical) kelimeleri bırakır.
                 const canonicalAnswers = Array.isArray(correctAnswer) 
