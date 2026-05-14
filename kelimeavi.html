@@ -513,7 +513,7 @@
                 <button class="icon-button" id="replay-button-header" onclick="restartGame()">🔄</button>
             </div>
             
-            <div id="instruction-text">اِبْحَثْ عَن الكَلِمات‫.‬</div>
+            <div id="instruction-text">تَمَّ اسْتِخْدام الحُروف المُشَدَّدَة مَرَّة واحِدَة.‬</div>
 
             <div class="header-button-container right">
                 <button id="fullscreen-btn">
@@ -638,23 +638,12 @@ const mobileLevels = [
 
         // Şedde (ّ) işaretini iki harfe dönüştüren fonksiyon
         // Örnek: 'مدرّس' -> 'مدررس' (2 harfe açar)
-        function unShedda(word) {
-            let newWord = '';
-            for (let i = 0; i < word.length; i++) {
-                const char = word[i];
-                if (char === 'ّ') { // Şedde karakteri
-                    // Bir önceki harfi tekrar ekle
-                    if (newWord.length > 0) {
-                        const prevChar = newWord[newWord.length - 1];
-                        newWord += prevChar;
-                    }
-                } else {
-                    newWord += char;
-                }
-            }
-            // Kelimenin başındaki şeddeyi (eğer varsa) ve kelimenin sonundaki şeddeyi temizler.
-            return newWord.replace('ّ', ''); 
-        }
+        // Şeddeyi (ّ) karakterini tamamen silen ve kelimeyi normal uzunluğunda bırakan fonksiyon
+function unShedda(word) {
+    // Regex kullanarak kelime içindeki tüm şedde işaretlerini bulur ve kaldırır
+    // Örn: 'أصلّي' (5 karakter: أ, ص, ل, ّ, ي) -> 'أصلي' (4 karakter)
+    return word.replace(/ّ/g, ''); 
+}
 
         // Şedde dönüşümünü tüm kelime setlerine uygulayan fonksiyon
         function preprocessLevels(levels) {
@@ -752,7 +741,7 @@ const mobileLevels = [
             wordListElement.innerHTML = '';
             feedbackOverlay.classList.remove('show');
             
-            instructionText.textContent = "اِبْحَثْ عَن الكَلِمات‫.‬";
+            instructionText.textContent = "تَمَّ اسْتِخْدام الحُروف المُشَدَّدَة مَرَّة واحِدَة.‬";
 
             renderWordList();
             
@@ -1156,7 +1145,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // C. 0.6 Saniye Bekle ve Yönerge Sesini Çal
         setTimeout(() => {
-            const audio = new Audio('yonergeav.wav');
+            const audio = new Audio('yonergeav.mp3');
             audio.play().catch(e => console.log("Ses çalma hatası:", e));
         }, 600);
     });

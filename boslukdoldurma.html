@@ -873,7 +873,7 @@ const activitiesData = [
     { 
         pre: "دِيارْ بَكِر مَشْهورَة بِـ", 
         post: "التّاريخِيَّة", 
-        a: ["أَسْوارِها التّاريخِيَّة"], 
+        a: ["الأَماكِن","أَسْوارِها"], 
         hint: "Diyarbakır tarihi ...ı ile meşhurdur." 
     },
 
@@ -1328,7 +1328,7 @@ const activitiesData = [
                 // 🔥 YAMA BAŞLANGICI: Geri bildirimde gizlenecek basitleştirilmiş kelimeler
                 // Bu kelimeler, asıl hemzeli/elifli formları kabul etmek için eklenmiş
                 // klavye dostu, basitleştirilmiş versiyonlardır ve geri bildirimde gösterilmeyecektir.
-                const variantsToExclude = ["اعيش","اسكن","الى","اسافر", "اذهب", "اين", "اقدم", "احدث","احمر","اخضر",,"اسرع","ابطا"];
+                const variantsToExclude = ["اعيش","اسكن","الى","اسافر", "اذهب", "اين", "اقدم", "احدث","الأَماكِن","اخضر",,"اسرع","ابطا"];
                 
                 // Cevap listesini filtrele: Sadece ana (canonical) kelimeleri bırakır.
                 const canonicalAnswers = Array.isArray(correctAnswer) 
