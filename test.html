@@ -211,7 +211,8 @@
             text-align: center;
             margin-bottom: 30px;
             color: #212529;
-            line-height: 1;
+           line-height: 1.4; /* Satır aralığını kelimelerin çakışmaması için artırdık */
+    white-space: pre-line;
         }
         .options {
             display: flex;
@@ -442,7 +443,7 @@
         #start-screen h1, #start-screen p { display: none; }
         
         #start-btn {
-            font-size: clamp(2rem, 5vmin, 3.5rem);
+            font-size: clamp(2rem, 4.5vmin, 3.5rem);
             background: var(--success-color); 
             color: #fff;
             border: none;
@@ -580,7 +581,7 @@ const activitiesData = [
             // --- 2. الأَطْعِمَة المَشْهورَة ---
             {
                 q: "تَشْتَهِرُ بورْصَة بِـ ............ .", 
-                o: ["المانْتي", "التَّنْتوني", "كَباب إِسْكَنْدَر", "القِشْطَة", "كَباب جاغ"], 
+                o: ["المانْتي", "التَّانْتوني", "كَباب إِسْكَنْدَر", "القِشْطَة", "كَباب جاغ"], 
                 a: 2
             },
             {
@@ -627,7 +628,7 @@ const activitiesData = [
             },
             {
                 q: "باطْمان مَشْهورَة بِـ ............ .", 
-                o: ["جامِع أولو", "حَسَنْكَيْف", "الأسوار", "القلعة", "البحر"], 
+                o: ["جامِع أولو", "حَسَنْ كَيْف", "الأسوار", "القلعة", "البحر"], 
                 a: 1
             },
 
