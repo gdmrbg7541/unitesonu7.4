@@ -934,11 +934,20 @@ const activitiesData = [
             return array;
         }
         
-        function normalizeForCheck(text) {
-            if (!text) return "";
-            let newText = text.replace(/[\u064B-\u065F]/g, ""); 
-            return newText.trim(); 
-        }
+        // **********************************************
+// *** NORMALİZASYON FONKSİYONU ***
+// **********************************************
+function normalizeForCheck(text) {
+    if (!text) return "";
+    
+    // 1. Hareke ve Tanvinleri Kaldır
+    let newText = text.replace(/[\u064B-\u065F]/g, ""); 
+    
+    // 2. Hemzeli Elifleri (أ, إ, آ) standart Elif'e (ا) çevir
+    newText = newText.replace(/[أإآ]/g, "ا");
+    
+    return newText.trim(); 
+}
 
         // --- ETKİNLİK YÜKLEME ---
         function loadActivity() {
