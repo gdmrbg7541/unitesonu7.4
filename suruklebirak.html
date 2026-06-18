@@ -498,7 +498,6 @@
             .word-item { min-height: 35px; font-size: 1.6rem; padding: 4px; }
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
 </head>
 <body>
 
@@ -736,19 +735,124 @@ const activityDataBank = [
         const zones = document.querySelectorAll('.category-drop-zone, .word-bank-container');
 
         draggables.forEach(d => {
+            // --- 1. MOUSE (MASAÜSTÜ) İÇİN STANDART D&D ---
             d.addEventListener('dragstart', e => {
                 e.dataTransfer.setData('text/plain', d.id);
                 d.classList.add('mouse-dragging');
             });
             d.addEventListener('dragend', () => d.classList.remove('mouse-dragging'));
+
+            // --- 2. DOKUNMATİK EKRANLAR İÇİN KUSURSUZ NATIVE TOUCH EVENTS ---
+            let startX, startY, initialRect, originalParent;
+
+            d.addEventListener('touchstart', e => {
+                if (d.classList.contains('correct') || d.classList.contains('incorrect-shake')) return;
+                
+                // Tarayıcının metin seçme ve varsayılan sürükleme olaylarını iptal et (Çakışmaları önler)
+                e.preventDefault(); 
+                
+                const touch = e.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+                
+                initialRect = d.getBoundingClientRect();
+                originalParent = d.parentNode;
+
+                // Boşluk kalması için hayalet element ekle
+                const placeholder = document.createElement('div');
+                placeholder.id = 'ghost-' + d.id;
+                placeholder.style.width = initialRect.width + 'px';
+                placeholder.style.height = initialRect.height + 'px';
+                placeholder.style.margin = '0 auto';
+                originalParent.insertBefore(placeholder, d);
+
+                // Elemanı serbest bırakıp body'e (ekranın tam üstüne) yapıştırıyoruz
+                d.classList.add('mouse-dragging');
+                d.style.position = 'fixed';
+                d.style.left = initialRect.left + 'px';
+                d.style.top = initialRect.top + 'px';
+                d.style.width = initialRect.width + 'px'; 
+                d.style.margin = '0';
+                d.style.zIndex = '99999'; 
+                d.style.transition = 'none';
+
+                document.body.appendChild(d);
+            }, { passive: false });
+
+            d.addEventListener('touchmove', e => {
+                if (!d.classList.contains('mouse-dragging')) return;
+                e.preventDefault(); 
+                
+                const touch = e.touches[0];
+                const moveX = touch.clientX - startX;
+                const moveY = touch.clientY - startY;
+                
+                d.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            }, { passive: false });
+
+            d.addEventListener('touchend', e => {
+                if (!d.classList.contains('mouse-dragging')) return;
+                
+                const touch = e.changedTouches[0];
+                
+                // 1. Önce bırakılan yerdeki hedefi bul (Stilleri sıfırlamadan ÖNCE, layout kaymasını önler)
+                d.style.visibility = 'hidden';
+                const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+                d.style.visibility = 'visible';
+
+                // 2. Şimdi geçici stilleri güvenle silebiliriz
+                d.classList.remove('mouse-dragging');
+                d.style.position = '';
+                d.style.left = '';
+                d.style.top = '';
+                d.style.width = '';
+                d.style.margin = '';
+                d.style.zIndex = '';
+                d.style.transition = ''; 
+                d.style.transform = ''; 
+
+                const placeholder = document.getElementById('ghost-' + d.id);
+                let droppedInZone = false;
+
+                // Hedef kontrolü
+                if (elemBelow) {
+                    const targetZone = elemBelow.closest('.category-drop-zone');
+                    if (targetZone) {
+                        targetZone.appendChild(d); 
+                        if (placeholder) placeholder.remove(); 
+                        droppedInZone = true;
+                        
+                        if (targetZone.dataset.category === d.dataset.wordCat) {
+                            d.classList.add('correct');
+                            d.draggable = false; // Masaüstü D&D için kilit
+                            playSound('correct');
+                            checkWin();
+                        } else {
+                            handleMistake(d);
+                        }
+                    }
+                }
+
+                // Kutuya denk gelmediyse eski yerine döndür
+                if (!droppedInZone) {
+                    if (placeholder) {
+                        originalParent.insertBefore(d, placeholder);
+                        placeholder.remove();
+                    } else {
+                        originalParent.appendChild(d);
+                    }
+                }
+            });
         });
 
+        // Masaüstü için standart Drop alanları ayarları
         zones.forEach(z => {
             z.addEventListener('dragover', e => e.preventDefault());
             z.addEventListener('drop', e => {
                 e.preventDefault();
                 const id = e.dataTransfer.getData('text/plain');
                 const el = document.getElementById(id);
+                if (!el) return;
                 const targetZone = e.target.closest('.category-drop-zone');
 
                 if (targetZone) {
