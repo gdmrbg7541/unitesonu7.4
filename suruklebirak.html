@@ -747,108 +747,6 @@ const activityDataBank = [
             });
             d.addEventListener('dragend', () => d.classList.remove('mouse-dragging'));
 
-            // --- 2. DOKUNMATİK EKRANLAR İÇİN KUSURSUZ NATIVE TOUCH EVENTS ---
-            let startX, startY, initialRect, originalParent;
-
-            d.addEventListener('touchstart', e => {
-                if (d.classList.contains('correct') || d.classList.contains('incorrect-shake')) return;
-                
-                e.preventDefault(); 
-                
-                const touch = e.touches[0];
-                startX = touch.clientX;
-                startY = touch.clientY;
-                
-                initialRect = d.getBoundingClientRect();
-                originalParent = d.parentNode;
-
-                // ÇÖZÜM BURADA: Düzenin bozulmaması için orijinal elemanın "görünmez bir kopyasını" ekliyoruz.
-                // Bu sayede CSS Grid sütunları yeniden hesaplamaz, kayma olmaz.
-                const placeholder = d.cloneNode(true);
-                placeholder.id = 'ghost-' + d.id;
-                placeholder.style.visibility = 'hidden'; // Tamamen görünmez yap
-                placeholder.style.pointerEvents = 'none'; // Dokunmayı kapat
-                placeholder.style.transform = 'none'; 
-                placeholder.style.transition = 'none';
-                originalParent.insertBefore(placeholder, d);
-
-                // Asıl elemanı serbest bırakıp body'e (ekranın tam üstüne) yapıştırıyoruz
-                d.classList.add('mouse-dragging');
-                d.style.position = 'fixed';
-                d.style.left = initialRect.left + 'px';
-                d.style.top = initialRect.top + 'px';
-                d.style.width = initialRect.width + 'px'; // Genişliğinin bozulmasını engelle
-                d.style.margin = '0';
-                d.style.zIndex = '99999'; 
-                d.style.transition = 'none';
-
-                document.body.appendChild(d);
-            }, { passive: false });
-
-            d.addEventListener('touchmove', e => {
-                if (!d.classList.contains('mouse-dragging')) return;
-                e.preventDefault(); 
-                
-                const touch = e.touches[0];
-                const moveX = touch.clientX - startX;
-                const moveY = touch.clientY - startY;
-                
-                d.style.transform = `translate(${moveX}px, ${moveY}px)`;
-            }, { passive: false });
-
-            d.addEventListener('touchend', e => {
-                if (!d.classList.contains('mouse-dragging')) return;
-                
-                const touch = e.changedTouches[0];
-                
-                // Bırakılan yerdeki hedefi bul
-                d.style.visibility = 'hidden';
-                const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-                d.style.visibility = 'visible';
-
-                // Geçici stilleri güvenle temizle
-                d.classList.remove('mouse-dragging');
-                d.style.position = '';
-                d.style.left = '';
-                d.style.top = '';
-                d.style.width = '';
-                d.style.margin = '';
-                d.style.zIndex = '';
-                d.style.transition = ''; 
-                d.style.transform = ''; 
-
-                const placeholder = document.getElementById('ghost-' + d.id);
-                let droppedInZone = false;
-
-                // Hedef kontrolü
-                if (elemBelow) {
-                    const targetZone = elemBelow.closest('.category-drop-zone');
-                    if (targetZone) {
-                        targetZone.appendChild(d); 
-                        if (placeholder) placeholder.remove(); 
-                        droppedInZone = true;
-                        
-                        if (targetZone.dataset.category === d.dataset.wordCat) {
-                            d.classList.add('correct');
-                            d.draggable = false; 
-                            playSound('correct');
-                            checkWin();
-                        } else {
-                            handleMistake(d);
-                        }
-                    }
-                }
-
-                // Kutuya denk gelmediyse eski yerine (görünmez klonun olduğu yere) döndür
-                if (!droppedInZone) {
-                    if (placeholder) {
-                        originalParent.insertBefore(d, placeholder);
-                        placeholder.remove();
-                    } else {
-                        originalParent.appendChild(d);
-                    }
-                }
-            });
         });
 
         // Masaüstü için standart Drop alanları ayarları
@@ -937,5 +835,6 @@ const activityDataBank = [
     });
 </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
 </body>
 </html>
