@@ -463,25 +463,16 @@
         body.fullscreen { background: var(--primary-bg) !important; }
 
         /* Yönlendirme Uyarısı (Telefonu Çevir) */
-        #orientation-warning {
-            position: fixed; inset: 0;
-            background: #2d3436; color: white;
-            display: none; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 99999; text-align: center;
-        }
+        
 
-        .phone-animation {
-            width: 60px; height: 100px;
-            border: 4px solid white; border-radius: 10px; margin-bottom: 20px;
-            animation: rotate-phone 2s infinite ease-in-out;
-        }
+        
 
-        @keyframes rotate-phone { 0% { transform: rotate(0deg); } 40%, 100% { transform: rotate(90deg); } }
-        #orientation-warning p { font-size: 2.5rem; margin: 0; }
+         40%, 100% { transform: rotate(90deg); } }
+        
 
         /* Mobil Cihazlar Dikey (Portrait) */
         @media screen and (orientation: portrait) and (max-width: 900px) {
-            #orientation-warning { display: flex; }
+            
             .activity-container, #start-screen { display: none !important; }
         }
 
@@ -502,29 +493,66 @@
             .word-bank-container { flex: 0 0 25%; padding: 10px; gap: 8px; }
             .word-item { min-height: 35px; font-size: 1.6rem; padding: 4px; }
         }
+    
+        /* --- YATAY MOD UYARISI STANDART TASARIMI --- */
+        #rotate-message {
+            display: none; 
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-color: #2c3e50; 
+            z-index: 9999; 
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        .phone-animation {
+            width: 60px;
+            height: 100px;
+            border: 4px solid white;
+            border-radius: 10px;
+            animation: rotate-phone 2s infinite ease-in-out;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .rotate-text {
+            font-size: clamp(2rem, 5vw, 4rem);
+            margin: 15px 0;
+            line-height: 1.5;
+            font-weight: 400;
+            font-family: var(--font-arabic);
+        }
+
+        @keyframes rotate-phone {
+            0%, 100% { transform: rotate(0deg); opacity: 1; }
+            50% { transform: rotate(90deg); opacity: 0.8; }
+        }
+
+        @media only screen and (orientation: portrait) {
+            #rotate-message { display: flex !important; }
+            .activity-container { display: none !important; } 
+            #start-screen { display: none !important; }
+        }
+
     </style>
 </head>
 <body>
+
+    <div id="rotate-message">
+        <div class="phone-animation"></div>
+        <div class="rotate-text">يُرْجى تَدْوير الجِهاز</div> 
+    </div>
+
 
     <div id="start-screen">
         <button id="start-button-main" onclick="startGame()">اِبْدَأْ</button>
     </div>
 
-    <div id="orientation-warning">
-        <div class="phone-animation"></div>
-        <p>يُرْجى تَدْوير الجِهاز</p>
-    </div>
-
-    <div class="activity-container" id="game-container">
-        <div class="header">
-            <div class="right-section">
-                <div id="instruction-text">صَنِّف الكَلِمات</div>
-                <div class="lives-container" id="lives-container">
-                    <span class="heart" id="h1">❤</span>
-                    <span class="heart" id="h2">❤</span>
-                    <span class="heart" id="h3">❤</span>
-                </div>
-            </div>
+    
             <div class="back-button-container">
                 <a href="index.html" class="back-button">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

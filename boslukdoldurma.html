@@ -443,51 +443,31 @@
             background-color: #0056b3; 
         }
 
-        #rotate-message {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background-color: #343a40; 
-            color: white;
-            display: none; 
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-            z-index: 5000;
-            font-family: var(--font-arabic);
-        }
+        
 
-        #rotate-message p {
-            font-size: clamp(1.5rem, 4vw, 3rem);
-            margin: 15px 0;
-            line-height: 1.5;
-            font-weight: 400;
-        }
+        
 
-        .phone-animation {
-            background: var(--accent-color);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            margin-bottom: 30px;
-            animation: rotate-phone 2s infinite ease-in-out;
-        }
+        
 
-        @keyframes rotate-phone {
-            0%, 100% { transform: rotate(0deg); }
+        
             50% { transform: rotate(90deg); }
         }
 
         /* YALNIZCA DİKEY (PORTRAIT) MOD KONTROLÜ */
         @media only screen and (orientation: portrait) {
-            #rotate-message { display: flex; } 
+             
             .activity-container { display: none; } 
         }
 
         /* --- MOBİL YATAY (LANDSCAPE) MOD KÜÇÜLTME YAMASI --- */
         @media only screen and (max-height: 900px) and (orientation: landscape) {
+    /* Yükseklik sığmama ve klavye/cümle kesilme sorunu yaması */
+    .activity-container {
+        height: 100vh !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+    }
+
             .header {
                 padding: 5px 10px;
                 gap: 10px;
@@ -595,9 +575,60 @@
                 line-height: 1;
             }
         }
+    
+        /* --- YATAY MOD UYARISI STANDART TASARIMI --- */
+        #rotate-message {
+            display: none; 
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-color: #2c3e50; 
+            z-index: 9999; 
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        .phone-animation {
+            width: 60px;
+            height: 100px;
+            border: 4px solid white;
+            border-radius: 10px;
+            animation: rotate-phone 2s infinite ease-in-out;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .rotate-text {
+            font-size: clamp(2rem, 5vw, 4rem);
+            margin: 15px 0;
+            line-height: 1.5;
+            font-weight: 400;
+            font-family: var(--font-arabic);
+        }
+
+        @keyframes rotate-phone {
+            0%, 100% { transform: rotate(0deg); opacity: 1; }
+            50% { transform: rotate(90deg); opacity: 0.8; }
+        }
+
+        @media only screen and (orientation: portrait) {
+            #rotate-message { display: flex !important; }
+            .activity-container { display: none !important; } 
+            #start-screen { display: none !important; }
+        }
+
     </style>
 </head>
 <body>
+
+    <div id="rotate-message">
+        <div class="phone-animation"></div>
+        <div class="rotate-text">يُرْجى تَدْوير الجِهاز</div> 
+    </div>
+
     <div class="activity-container" id="main-container" style="display: none;">
         <div class="header">
             <div class="progress-container">
@@ -642,13 +673,7 @@
         <button id="start-button">اِبْدَأْ</button>
     </div>
     
-    <div id="rotate-message">
-        <div class="phone-animation">
-            <svg viewBox="0 0 24 24" fill="#ffffff" width="60" height="60">
-                <path d="M17 1H7C5.9 1 5 1.9 5 3v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm-2 20H9v-1h6v1zm2-3H7V6h10v12z" />
-            </svg>
-        </div>
-    </div>
+    
 
     <script>
         // --- KLAVYE TASARIMI ---
