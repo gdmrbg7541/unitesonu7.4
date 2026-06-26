@@ -7,6 +7,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
+
+        /* --- TARAYICI VARSAYILAN KALINLAŞTIRMALARINI SIFIRLAMA --- */
+        h1, h2, h3, h4, h5, h6, strong, b, th, td {
+            font-weight: 400 !important;
+        }
+
         /* 1. ARAKOM.TTF dosyasını sisteme tanıtıyoruz */
         @font-face {
             font-family: 'Arakom';
@@ -443,16 +449,6 @@
             background-color: #0056b3; 
         }
 
-        
-
-        
-
-        
-
-        
-            50% { transform: rotate(90deg); }
-        }
-
         /* YALNIZCA DİKEY (PORTRAIT) MOD KONTROLÜ */
         @media only screen and (orientation: portrait) {
              
@@ -461,14 +457,19 @@
 
         /* --- MOBİL YATAY (LANDSCAPE) MOD KÜÇÜLTME YAMASI --- */
         @media only screen and (max-height: 900px) and (orientation: landscape) {
-    /* Yükseklik sığmama ve klavye/cümle kesilme sorunu yaması */
-    .activity-container {
-        height: 100vh !important;
-        min-height: 0 !important;
+    /* Yükseklik sığmama ve klavye/cümle kesilme sorunu yaması (Body kaydırma aktif) */
+    body {
         overflow-y: auto !important;
+        height: auto !important;
+        min-height: 100vh !important;
+    }
+    .activity-container {
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow-y: visible !important;
     }
 
-            .header {
+    .header {
                 padding: 5px 10px;
                 gap: 10px;
                 grid-template-columns: 200px 1fr 200px; 
@@ -801,7 +802,7 @@ const activitiesData = [
     },
     // 11. Diyarbakır - Surları
     { 
-        pre: "دِيارْ بَكِر مَشْهورَة بِـ", 
+        pre: "دِيار بَكْر مَشْهورَة بِـ", 
         post: "التّاريخِيَّة ( أَسْوارِها / كَبابِها )", 
         a: ["الأَماكِن","أَسْوارِها"], 
         hint: "Diyarbakır tarihi ...ı ile meşhurdur." 
@@ -830,8 +831,8 @@ const activitiesData = [
     // 15. Mersin - Tantuni
     { 
         pre: "مَرْسين مَشْهورَة بِـ", 
-        post: " ( التَّنْتوني / القِشْطَة )", 
-        a: ["التّانْتوني", "التَّنْتوني"], 
+        post: " ( التّانْتوني / القِشْطَة )", 
+        a: ["التّانْتوني"], 
         hint: "Mersin'in meşhur yemeği." 
     },
     // 16. Afyon - Kaymak
@@ -936,16 +937,32 @@ const activitiesData = [
         let scoreIncorrect = 0; 
 
         // --- Tam Ekran ---
-        function toggleFullScreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-            } else {
-                if (document.exitFullscreen) document.exitFullscreen();
+                function toggleFullScreen() {
+            try {
+                const docElm = document.documentElement;
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    if (docElm.requestFullscreen) {
+                        docElm.requestFullscreen().catch(err => console.log(err));
+                    } else if (docElm.webkitRequestFullscreen) {
+                        docElm.webkitRequestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    }
+                }
+            } catch (e) {
+                console.log("Fullscreen error:", e);
             }
         }
         function checkFullScreen() {
-             if (document.fullscreenElement) document.body.classList.add('fullscreen');
-             else document.body.classList.remove('fullscreen');
+             if (document.fullscreenElement || document.webkitFullscreenElement) {
+                 document.body.classList.add('fullscreen');
+             } else {
+                 document.body.classList.remove('fullscreen');
+             }
         }
         if(fullscreenButton) fullscreenButton.addEventListener('click', toggleFullScreen);
         document.addEventListener('fullscreenchange', checkFullScreen);

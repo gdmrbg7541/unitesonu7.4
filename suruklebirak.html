@@ -7,6 +7,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
+
+        /* --- TARAYICI VARSAYILAN KALINLAŞTIRMALARINI SIFIRLAMA --- */
+        h1, h2, h3, h4, h5, h6, strong, b, th, td {
+            font-weight: 400 !important;
+        }
+
         @font-face {
             font-family: 'Arakom';
             src: url('ARAKOM.TTF') format('truetype'),
@@ -465,11 +471,6 @@
         /* Yönlendirme Uyarısı (Telefonu Çevir) */
         
 
-        
-
-         40%, 100% { transform: rotate(90deg); } }
-        
-
         /* Mobil Cihazlar Dikey (Portrait) */
         @media screen and (orientation: portrait) and (max-width: 900px) {
             
@@ -552,7 +553,16 @@
         <button id="start-button-main" onclick="startGame()">اِبْدَأْ</button>
     </div>
 
-    
+    <div class="activity-container" id="game-container" style="display: none;">
+        <div class="header">
+            <div class="right-section">
+                <p id="instruction-text"></p>
+                <div class="lives-container" id="lives-container">
+                    <span class="heart" id="h1">❤️</span>
+                    <span class="heart" id="h2">❤️</span>
+                    <span class="heart" id="h3">❤️</span>
+                </div>
+            </div>
             <div class="back-button-container">
                 <a href="index.html" class="back-button">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -587,53 +597,36 @@
     ]; // Renkler yeni tasarıma uygun olarak pastel/canlı tonlarla güncellendi
 
 const activityDataBank = [
-    // 1. TUR: تصنيف المدن حسب الموقع الجغرافي
     {
         title: "صَنِّف المُدُن حَسَب مَوْقِعِها الجُغْرافِيّ.", 
         categories: ["➡️ شَرْق","⬆️ شَمال", "⬇️ جَنوب", " غَرْب ⬅️ ", "📍 وَسَط"], 
         words: [
-            // شَمال (Kuzey)
             { w: "سينوب", cat: "⬆️ شَمال" }, 
-
-            // جَنوب (Güney)
             { w: "مَرْسين", cat: "⬇️ جَنوب" }, 
-
-            // شَرْق (Doğu)
             { w: "وان", cat: "➡️ شَرْق" }, 
-            { w: "دِيارْ بَكِر", cat: "➡️ شَرْق" },
+            { w: "دِيار بَكْر", cat: "➡️ شَرْق" },
             { w: "باطْمان", cat: "➡️ شَرْق" },
-
-            // غَرْب (Batı)
             { w: "إِزْمير", cat: " غَرْب ⬅️ " }, 
             { w: "إِسْطَنْبول", cat:" غَرْب ⬅️ " }, 
             { w: "بورْصَة", cat: " غَرْب ⬅️ " },
-
-            // وَسَط (Orta)
             { w: "أَنْقَرَة", cat: "📍 وَسَط" }, 
             { w: "قونْيا", cat: "📍 وَسَط" },
             { w: "قَيْصَري", cat: "📍 وَسَط" }
         ]
     },
-
-    // 2. TUR: الأَطْعِمَة وَالأَماكِن وَالصِّفات
     {
         title: "صَنِّف الكَلِمات حَسَب نَوْعِها.", 
         categories: ["🍲 أَطْعِمَة", "🏢 أَماكِن", "✨ صِفات"], 
         words: [
-            // أَطْعِمَة (Meşhur Yemekler)
             { w: "المانْتي", cat: "🍲 أَطْعِمَة" }, 
-            { w: "التَّنْتوني", cat: "🍲 أَطْعِمَة" }, 
+            { w: "التّانْتوني", cat: "🍲 أَطْعِمَة" }, 
             { w: "القِشْطَة", cat: "🍲 أَطْعِمَة" }, 
             { w: "كَباب", cat: "🍲 أَطْعِمَة" }, 
-
-            // أَماكِن (Mekanlar)
             { w: "مُتْحَف", cat: "🏢 أَماكِن" }, 
             { w: "جامِع", cat: "🏢 أَماكِن" }, 
             { w: "قَلْعَة", cat: "🏢 أَماكِن" }, 
             { w: "سوق", cat: "🏢 أَماكِن" }, 
             { w: "حَيّ", cat: "🏢 أَماكِن" }, 
-
-            // صِفات (Sıfatlar)
             { w: "مُزْدَحِم", cat: "✨ صِفات" }, 
             { w: "بَعيد", cat: "✨ صِفات" }, 
             { w: "قَريب", cat: "✨ صِفات" }, 
@@ -763,7 +756,78 @@ const activityDataBank = [
         setupEvents();
     }
 
-    function setupEvents() {
+    
+    let dragClone = null;
+    let draggedOriginal = null;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    function handleTouchStart(e) {
+        if(e.target.classList.contains('correct')) return;
+        draggedOriginal = e.target;
+        const rect = draggedOriginal.getBoundingClientRect();
+        const touch = e.touches[0];
+        
+        offsetX = touch.clientX - rect.left;
+        offsetY = touch.clientY - rect.top;
+
+        dragClone = draggedOriginal.cloneNode(true);
+        dragClone.style.position = 'fixed';
+        dragClone.style.left = rect.left + 'px';
+        dragClone.style.top = rect.top + 'px';
+        dragClone.style.width = rect.width + 'px';
+        dragClone.style.height = rect.height + 'px';
+        dragClone.style.opacity = '0.9';
+        dragClone.style.pointerEvents = 'none';
+        dragClone.style.zIndex = '999999';
+        dragClone.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
+        dragClone.style.transform = 'scale(1.05)';
+        dragClone.style.margin = '0';
+        
+        document.body.appendChild(dragClone);
+        draggedOriginal.style.opacity = '0.4';
+    }
+
+    function handleTouchMove(e) {
+        if (!dragClone) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        dragClone.style.left = (touch.clientX - offsetX) + 'px';
+        dragClone.style.top = (touch.clientY - offsetY) + 'px';
+    }
+
+    function handleTouchEnd(e) {
+        if (!dragClone || !draggedOriginal) return;
+        
+        const touch = e.changedTouches[0];
+        // Clone'u geçici olarak gizleyip altindaki elemani buluyoruz
+        dragClone.style.display = 'none';
+        const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+        
+        dragClone.remove();
+        dragClone = null;
+        draggedOriginal.style.opacity = '1';
+        
+        const targetZone = dropTarget ? dropTarget.closest('.category-drop-zone') : null;
+        
+        if (targetZone) {
+            targetZone.appendChild(draggedOriginal);
+            if (targetZone.dataset.category === draggedOriginal.dataset.wordCat) {
+                draggedOriginal.classList.add('correct');
+                draggedOriginal.draggable = false;
+                draggedOriginal.removeEventListener('touchstart', handleTouchStart);
+                draggedOriginal.removeEventListener('touchmove', handleTouchMove);
+                draggedOriginal.removeEventListener('touchend', handleTouchEnd);
+                playSound('correct');
+                checkWin();
+            } else {
+                handleMistake(draggedOriginal);
+            }
+        }
+        draggedOriginal = null;
+    }
+
+function setupEvents() {
         const draggables = document.querySelectorAll('.word-item');
         const zones = document.querySelectorAll('.category-drop-zone, .word-bank-container');
 
@@ -774,6 +838,11 @@ const activityDataBank = [
                 d.classList.add('mouse-dragging');
             });
             d.addEventListener('dragend', () => d.classList.remove('mouse-dragging'));
+            
+            // Mobil için özel Touch olayları
+            d.addEventListener('touchstart', handleTouchStart, {passive: false});
+            d.addEventListener('touchmove', handleTouchMove, {passive: false});
+            d.addEventListener('touchend', handleTouchEnd);
 
         });
 
@@ -856,13 +925,21 @@ const activityDataBank = [
         const fsBtn = document.getElementById('fullscreen-btn');
         if (fsBtn) {
             fsBtn.addEventListener('click', () => {
-                if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-                else document.exitFullscreen();
+                try {
+                    const docElm = document.documentElement;
+                    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                        if (docElm.requestFullscreen) docElm.requestFullscreen().catch(e=>console.log(e));
+                        else if (docElm.webkitRequestFullscreen) docElm.webkitRequestFullscreen();
+                    } else {
+                        if (document.exitFullscreen) document.exitFullscreen();
+                        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                    }
+                } catch(e) {}
             });
         }
     });
 </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    
 </body>
 </html>

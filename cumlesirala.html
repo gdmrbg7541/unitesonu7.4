@@ -7,6 +7,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
+
+        /* --- TARAYICI VARSAYILAN KALINLAŞTIRMALARINI SIFIRLAMA --- */
+        h1, h2, h3, h4, h5, h6, strong, b, th, td {
+            font-weight: 400 !important;
+        }
+
       @font-face {
         font-family: 'Arakom';
         src: url('ARAKOM.TTF') format('truetype'),
@@ -391,14 +397,18 @@
         
 /* --- MOBİL YATAY: SABİT ORAN KALDIRILMIŞ VE SIKIŞTIRILMIŞ DÜZEN --- */
 @media only screen and (max-height: 500px) and (orientation: landscape) {
-    /* Yükseklik sığmama ve klavye/cümle kesilme sorunu yaması */
-    .activity-container {
-        height: 100vh !important;
-        min-height: 0 !important;
+    /* Yükseklik sığmama ve klavye/cümle kesilme sorunu yaması (Body kaydırma aktif) */
+    body {
         overflow-y: auto !important;
+        height: auto !important;
+        min-height: 100vh !important;
+    }
+    .activity-container {
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow-y: visible !important;
     }
 
-    
     /* 1. Ana Konteyner: 16:9 oranını iptal edip tam ekran yapıyoruz */
     .activity-container {
         width: 100vw !important;  /* Ekran genişliğinin tamamı */
@@ -806,10 +816,23 @@ const activitiesData = [
         
         // --- Tam Ekran ---
         function toggleFullScreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => console.error(err));
-            } else {
-                if (document.exitFullscreen) document.exitFullscreen();
+            try {
+                const docElm = document.documentElement;
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    if (docElm.requestFullscreen) {
+                        docElm.requestFullscreen().catch(err => console.log(err));
+                    } else if (docElm.webkitRequestFullscreen) {
+                        docElm.webkitRequestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    }
+                }
+            } catch (e) {
+                console.log("Fullscreen error:", e);
             }
         }
 
