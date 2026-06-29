@@ -61,7 +61,7 @@
             width: clamp(320px, 95vw, 1400px);
             height: calc(95vw * 9 / 16); /* 16:9 oranı korunur */
             max-height: 95vh;
-            max-width: calc(95vh * 16 / 9);
+            max-width: 100vw;
         }
         
         /* --- Üst Menü (Header) --- */
@@ -523,6 +523,11 @@
 <div class="activity-container" id="main-activity-container">
     
     <div id="start-screen">
+        <a href="javascript:void(0);" onclick="exitToHome()" style="position: absolute; top: 15px; left: 15px; z-index: 2001; background: #f0f0f0; color: #555; border: 1px solid #ccc; border-radius: 8px; width: clamp(40px, 8vmin, 55px); height: clamp(40px, 8vmin, 55px); display: flex; align-items: center; justify-content: center; text-decoration: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width: clamp(24px, 5vmin, 30px); height: clamp(24px, 5vmin, 30px); fill: currentColor;">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+        </a>
         <button id="start-btn" onclick="startActivity()">اِبْدَأْ</button>
     </div>
     
@@ -546,9 +551,9 @@
                 </svg>
             </button>
 
-            <a href="index.html" class="icon-btn" title="Ana Sayfa">
+            <a href="javascript:void(0);" onclick="exitToHome()" class="icon-btn" title="Ana Sayfa">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
                 </svg>
             </a>
         </div>
@@ -1064,7 +1069,7 @@ const activitiesData = [
             if (currentActivityIndex === grandTotalActivities) return;
             
             const currentTotal = currentActivityIndex + 1;
-            const percentage = (currentActivityIndex / grandTotalActivities) * 100;
+            const percentage = (currentTotal / grandTotalActivities) * 100;
             
             progressDisplay.textContent = `${currentTotal} / ${grandTotalActivities}`;
             progressBar.style.width = `${percentage}%`;
@@ -1132,5 +1137,57 @@ const activitiesData = [
             // Oyun, DOM yüklendiğinde otomatik başlamaz. Sadece startActivity() çağrıldığında başlar.
         });
     </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const backBtns = document.querySelectorAll('.back-button');
+    backBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = btn.getAttribute('href') || 'index.html';
+            try {
+                if (document.fullscreenElement || document.webkitFullscreenElement) {
+                    if (document.exitFullscreen) document.exitFullscreen();
+                    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                }
+            } catch(err) {}
+            setTimeout(() => { window.location.href = target; }, 150);
+        });
+    });
+});
+</script>
+
+<script>
+function exitToHome() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+        let isNavigating = false;
+        function goHome() {
+            if (!isNavigating) {
+                isNavigating = true;
+                window.location.href = 'index.html';
+            }
+        }
+        
+        document.addEventListener("fullscreenchange", goHome);
+        document.addEventListener("webkitfullscreenchange", goHome);
+        
+        setTimeout(goHome, 500);
+
+        try {
+            if (document.exitFullscreen) {
+                let promise = document.exitFullscreen();
+                if (promise) promise.catch(goHome);
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        } catch (e) {
+            goHome();
+        }
+    } else {
+        window.location.href = 'index.html';
+    }
+}
+</script>
+
 </body>
 </html>

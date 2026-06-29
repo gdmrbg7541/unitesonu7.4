@@ -71,7 +71,7 @@
             width: 98vw;
             height: calc(98vw * 9 / 16); 
             max-height: 98vh;
-            max-width: calc(98vh * 16 / 9);
+            max-width: 100vw;
         }
         
         /* Header Alanı */
@@ -550,6 +550,11 @@
 
 
     <div id="start-screen">
+        <a href="javascript:void(0);" onclick="exitToHome()" style="position: absolute; top: 15px; left: 15px; z-index: 2001; background: #f0f0f0; color: #555; border: 1px solid #ccc; border-radius: 8px; width: clamp(40px, 8vmin, 55px); height: clamp(40px, 8vmin, 55px); display: flex; align-items: center; justify-content: center; text-decoration: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width: clamp(24px, 5vmin, 30px); height: clamp(24px, 5vmin, 30px); fill: currentColor;">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+        </a>
         <button id="start-button-main" onclick="startGame()">اِبْدَأْ</button>
     </div>
 
@@ -564,7 +569,7 @@
                 </div>
             </div>
             <div class="back-button-container">
-                <a href="index.html" class="back-button">
+                <a href="javascript:void(0);" onclick="exitToHome()" class="back-button">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
                     </svg>
@@ -604,8 +609,8 @@ const activityDataBank = [
             { w: "سينوب", cat: "⬆️ شَمال" }, 
             { w: "مَرْسين", cat: "⬇️ جَنوب" }, 
             { w: "وان", cat: "➡️ شَرْق" }, 
-            { w: "دِيار بَكْر", cat: "➡️ شَرْق" },
-            { w: "باطْمان", cat: "➡️ شَرْق" },
+            { w: "أَرْضُروم", cat: "➡️ شَرْق" },
+            { w: "قارْص", cat: "➡️ شَرْق" },
             { w: "إِزْمير", cat: " غَرْب ⬅️ " }, 
             { w: "إِسْطَنْبول", cat:" غَرْب ⬅️ " }, 
             { w: "بورْصَة", cat: " غَرْب ⬅️ " },
@@ -680,10 +685,10 @@ const activityDataBank = [
         updateHearts();
         playSound('incorrect');
 
-        wordElement.classList.add('incorrect-shake');
+        wordElement.classList.add('incorrect');
 
         setTimeout(() => {
-            wordElement.classList.remove('incorrect-shake');
+            wordElement.classList.remove('incorrect');
             
             if (lives <= 0) {
                 showEndScreen(false);
@@ -720,7 +725,7 @@ const activityDataBank = [
         const area = document.getElementById('categorize-area-content');
         area.innerHTML = '';
         const data = activityDataBank[currentActivityIndex];
-        document.getElementById('instruction-text').textContent = data.title;
+        document.getElementById('instruction-text').textContent = `[${currentActivityIndex + 1}/${activityDataBank.length}] ` + data.title;
 
         const container = document.createElement('div');
         container.className = 'categorize-container';
@@ -889,9 +894,11 @@ function setupEvents() {
 
         icon.textContent = isWin ? '🏆' : '😔';
         
-        text.textContent = isWin 
-            ? "أَحْسَنْت!" 
-            : "لِلْأَسَف، اِنْتَهَت المُحاوَلات!"; 
+        if (isWin && currentActivityIndex === activityDataBank.length - 1) {
+            text.innerHTML = `أَحْسَنْت! <br> لَقَدْ أَنْهَيْتَ كُلّ المَراحِل`;
+        } else {
+            text.textContent = isWin ? "أَحْسَنْت!" : "لِلْأَسَف، اِنْتَهَت المُحاوَلات!"; 
+        } 
         
         overlay.classList.add('show');
     }
@@ -941,5 +948,57 @@ function setupEvents() {
 </script>
 
     
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const backBtns = document.querySelectorAll('.back-button');
+    backBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = btn.getAttribute('href') || 'index.html';
+            try {
+                if (document.fullscreenElement || document.webkitFullscreenElement) {
+                    if (document.exitFullscreen) document.exitFullscreen();
+                    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                }
+            } catch(err) {}
+            setTimeout(() => { window.location.href = target; }, 150);
+        });
+    });
+});
+</script>
+
+<script>
+function exitToHome() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+        let isNavigating = false;
+        function goHome() {
+            if (!isNavigating) {
+                isNavigating = true;
+                window.location.href = 'index.html';
+            }
+        }
+        
+        document.addEventListener("fullscreenchange", goHome);
+        document.addEventListener("webkitfullscreenchange", goHome);
+        
+        setTimeout(goHome, 500);
+
+        try {
+            if (document.exitFullscreen) {
+                let promise = document.exitFullscreen();
+                if (promise) promise.catch(goHome);
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        } catch (e) {
+            goHome();
+        }
+    } else {
+        window.location.href = 'index.html';
+    }
+}
+</script>
+
 </body>
 </html>
